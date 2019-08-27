@@ -6,7 +6,7 @@
       <h1>Rooms Available</h1>
    </div>
    <div class="col-md-4">
-      <form action="/search" method="get">
+      <form action="/blog2/public/search" method="get">
          <div class="input-group">
             <input type="search" name="search" class="form-control">
             <span class="input-group-prepend">

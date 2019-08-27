@@ -47,6 +47,11 @@ Route::get('/about',function(){
    return view('pages.about');
 });
 
+Route::get('/profile',function(){
+   return view('profile');
+});
+
+
 Route::get('/services','PagesController@services');
 // Route::get('/users/{id}/{name}',function($id,$name){
 //    return 'this is '.$id.'with name '.$name;

@@ -41,7 +41,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-       <form action="/advancesearch" method="get">
+       <form action="/blog2/public/advancesearch" method="get">
       <div class="modal-body mx-3">
         <div class="md-form mb-3">
           <i class="fas fa-envelope prefix grey-text"></i>
@@ -53,7 +53,7 @@
           <h5><label data-error="wrong" data-success="right" for="form29">Area</label></h5>
           <i class="fas fa-envelope prefix grey-text"></i>
            <select id="areas" onclick="selectarea();">
-            <option>uttora</option> 
+            <option>uttara</option>
             <option>adabor</option>
             <option>azimpur</option>
             <option>motijheel</option>
@@ -94,7 +94,7 @@
 </div>
 
 <div class="text-center">
-  
+
   <a href="" class="btn btn-primary" data-toggle="modal" data-target="#modalContactForm"><h1>SEARCH FOR APARTMENT</h1></a>
 </div>
 

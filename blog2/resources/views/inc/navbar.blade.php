@@ -28,6 +28,9 @@
       <li>
         <a class="nav-link" href="/blog2/public/notify">Notifications</a>
       </li>
+      <li>
+        <a class="nav-link" href="/blog2/public/profile">Profile</a>
+      </li>
     </ul>
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
