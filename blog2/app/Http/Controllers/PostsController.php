@@ -40,11 +40,11 @@ class PostsController extends Controller
         //$posts= Post::orderBy('title','desc')->take(1)->get();
        // $posts=Post::al
         //return User::all();
-        //return Post::where('title','second post')->get(); 
+        //return Post::where('title','second post')->get();
       //  $posts=DB::select('SELECT * FROM posts');
        $posts= Post::orderBy('title','asc')->paginate(6);
         return view('posts.index')->with('posts',$posts);
-        
+
     }
 
     /**
@@ -125,7 +125,7 @@ class PostsController extends Controller
         $post=new Post;
         $post->title=$request->input('title');
         $post->body=$request->input('body');
-        $post->user_id=  auth()->user()->id; 
+        $post->user_id=  auth()->user()->id;
         $post->type=$request->input('type');
         $post->room_no=$request->input('room_no');
         $post->location=$request->input('location');
@@ -190,9 +190,9 @@ $products=(object) $products;
     }
 
 
-   
-   
-   
+
+
+
      public function book_room($id,Request $request)
     {
         $ss='dick';
@@ -219,9 +219,9 @@ $products=(object) $products;
             ->where('rpname', $plame)
             ->update(['host_name' => auth()->user()->name]);
         //$iroom->booking="pending";
-       
+
         $post->room_no=$post->room_no-1;
-      
+
         $post->save();
         return back();
       //  return redirect('/posts');
@@ -285,13 +285,29 @@ $products=(object) $products;
         }
 
         //create post
+        $total_cost=0;
         $post=Post::find($id);
         $post->title=$request->input('title');
+        $post->room_no=$post->room_no+$request->input('room_no');
         $post->body=$request->input('body');
         if($request->hasFile('cover_image'))
         {
             $post->cover_image=$fileNameToStore;
         }
+        foreach($request->rpname as $item=>$v){
+             $total_cost=$total_cost+$request->cost[$item];
+            $data2=array(
+                'rpname'=>$request->rpname[$item],
+                'max_people'=>$request->max_people[$item],
+                'cost'=>$request->cost[$item],
+                'from_date'=>$request->from_date[$item],
+                'to_date'=>$request->to_date[$item],
+                'flat_name'=>$request->input('title'),
+                'user_id'=>auth()->user()->id,
+            );
+        Room_info::insert($data2);
+         }
+         $post->total_cost = $post->total_cost+$total_cost;
         $post->save();
         return redirect('/posts')->with('success','Room Updated');
     }
@@ -299,7 +315,7 @@ $products=(object) $products;
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id 
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
