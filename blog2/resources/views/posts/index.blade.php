@@ -37,6 +37,12 @@
             <td>
                <a href="/blog2/public/posts/{{$post->id}}" class="btn btn-info">Show</a>
             </td>
+            <td>
+               <a href="/blog2/public/pos/{{$post->user_id}}" class="btn btn-info">Show Profile</a>
+            </td>
+            <td>
+               <a href="/blog2/public/map" class="btn btn-info">Show Map</a>
+            </td>
    		</tr>
    		@endforeach
 

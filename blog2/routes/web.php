@@ -58,6 +58,8 @@ Route::get('/services','PagesController@services');
 // });
 Route::get('/search','PostsController@search');
 Route::get('/advancesearch','PostsController@advancesearch');
+Route::get('/pos/{id}','PostsController@showHostInfo');
+Route::get('/map','PostsController@showMap');
 Route::resource('posts','PostsController');
 Auth::routes();
 Route::post('/dpractice/{id}','PostsController@book_room');
@@ -68,6 +70,7 @@ Route::post('/dashboard/cancelroom/{id}','DashboardController@cancelroom');
 Route::get('/dashboard', 'DashboardController@index');
 Route::get('/dashboard/requestroom', 'DashboardController@requestroom');
 Route::get('/dashboard/occupiedroom', 'DashboardController@occupiedroom');
+Route::get('/dashboard/useroom', 'DashboardController@useroom');
 Route::get('/dashboard/occupiedroom/pdf', 'DashboardController@pdf');
 Route::get('/admin/table/pdf', 'AdminController@pdf');
 Route::get('/admin/login',function(){
@@ -75,6 +78,9 @@ Route::get('/admin/login',function(){
 });
 Route::get('/popup',function(){
     return view('modalpopup');
+});
+Route::get('/dashboard/rating',function(){
+    return view('rating');
 });
 Route::get('/admin/forgot',function(){
 	return view('admin.forgot-password');

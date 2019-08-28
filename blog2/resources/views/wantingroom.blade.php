@@ -27,6 +27,16 @@
           <i class="fas fa-fw fa-table"></i>
           <span>Rooms Currently Using</span></a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="useroom">
+          <i class="fas fa-fw fa-table"></i>
+          <span>Rooms I am Using</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="dashboard/rating">
+          <i class="fas fa-fw fa-chart-area"></i>
+          <span>Ratings and review</span></a>
+      </li>
     </ul>
 
 

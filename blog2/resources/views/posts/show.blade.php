@@ -74,50 +74,25 @@
 				<a href="{{action('PostsController@index')}}" class="btn btn-primary">Back</a>
 			</div>
 		</div></br>
-		<div class="item-wrapper">
-			<button class="btn btn-primary" onclick="openForm()">Review</button>
-	    		<div class="form-popup" id="myForm">
-	    			{{ Form::open(['action'=>['PostsController@review_room',$post->id],'method' => 'POST','class'=>'form-container']) }}
-	    				<div class="form-group">
-	    					<input type="text" class="form-control" name="headline" id="" placeholder="Headline">
-	    					<input type="text" class="form-control" name="description" id="" placeholder="Description">
-	    					<div class="rate">
-	    						<input type="radio" id="star5" name="rate" value="5" class="mt_star" />
-	    						<label for="star5" title="text">5 stars</label>
-	    						<input type="radio" id="star4" name="rate" value="4" class="mt_star"/>
-	    						<label for="star4" title="text">4 stars</label>
-	    						<input type="radio" id="star3" name="rate" value="3" class="mt_star"/>
-	    						<label for="star3" title="text">3 stars</label>
-	    						<input type="radio" id="star2" name="rate" value="2" class="mt_star"/>
-	    						<label for="star2" title="text">2 stars</label>
-	    						<input type="radio" id="star1" name="rate" value="1" class="mt_star"/>
-	    						<label for="star1" title="text">1 star</label>
-	    					</div>
-	    					{{Form::submit('Submit Review',['class'=>'btn btn-primary'])}}
-	    					<button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-	    				</div>
-	    			</form>
-	    		</div>
-	    		<table class="table table-bordered">
-	    			<thead>
-	    				<tr>
-	    					<th>Headline</th>
-	    					<th>Description</th>
-	    					<th>Rating</th>
-	    				</tr>
-	    			</thead>
-	    			<tbody>
-	    				@foreach($reviews as $review)
-	    				<tr>
-	    					<td>{{$review->headline}}</td>
-	    					<td>{{$review->description}}</td>
-	    					<td>{{$review->rating}}</td>
-	    				</tr>
-	    				@endforeach
-	    			</tbody>
-	    		</table>
-	    	</div>
-	    </div>
+		<!-- <table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>Headline</th>
+					<th>Description</th>
+					<th>Rating</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach($reviews as $review)
+				<tr>
+					<td>{{$review->headline}}</td>
+					<td>{{$review->description}}</td>
+					<td>{{$review->rating}}</td>
+				</tr>
+				@endforeach
+			</tbody>
+		</table> -->
+
 </div>
 </div>
 <div class="col-md-6">

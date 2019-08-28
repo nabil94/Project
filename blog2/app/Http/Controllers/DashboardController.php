@@ -92,7 +92,7 @@ class DashBoardController extends Controller
             $query->select('id')->from('room_book')->where('rid','=',$p->id);
         }
         })->get();*/
-        
+
         return view('occupiedroom')->with('posts',$posts);
     }
 
@@ -103,6 +103,17 @@ class DashBoardController extends Controller
 
         return view('wantingroom')->with('posts',$posts);
     }
+
+    public function useroom(Request $request)
+   {
+       $user_id=auth()->user()->id;
+       $posts = Room_info::where([['booking', '=', 'booked'],['hostid', '=', $user_id]])->get();
+       $todayDate = date("Y-m-d");
+
+
+
+       return view('useroom')->with('posts',$posts)->with('todayDate',$todayDate);
+   }
       public function cancelwantingroom($id)
     {
         $post= Room_info::find($id);
@@ -174,11 +185,11 @@ class DashBoardController extends Controller
             ->where('rpname', $plame)
             ->update(['max_people' => $request->input($name)]);
 
-             
+
         //$iroom->booking="pending";
-       
+
         //$post->room_no=$post->room_no+1;
-      
+
         //$post->save();
         return back();
     }

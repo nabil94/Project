@@ -27,6 +27,16 @@
           <i class="fas fa-fw fa-table"></i>
           <span>Rooms Currently Using</span></a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="useroom">
+          <i class="fas fa-fw fa-table"></i>
+          <span>Rooms I am Using</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="rating">
+          <i class="fas fa-fw fa-chart-area"></i>
+          <span>Ratings and review</span></a>
+      </li>
     </ul>
 
 
@@ -34,7 +44,7 @@
     <div class="row justify-content-center">
         @if(count($posts)<1)
            <h1>No Pending Request</h1>
-        @else  
+        @else
         <div class row>
           <h1>Requested Rooms</h1>
         </div>

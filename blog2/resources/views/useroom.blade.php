@@ -30,11 +30,6 @@
           <i class="fas fa-fw fa-table"></i>
           <span>Rooms I am Using</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="rating">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Ratings and review</span></a>
-      </li>
     </ul>
 
 
@@ -44,7 +39,7 @@
            <h1>No Room in Use</h1>
         @else
          <div class row>
-          <h1>Requested Rooms</h1>
+          <h1>My using Rooms</h1>
         </div>
          <div class="col-md-5" align="right">
      <a href="{{ url('/dashboard/occupiedroom/pdf') }}" class="btn btn-danger">Convert into PDF</a>
@@ -55,8 +50,8 @@
       <th scope="col">Room Name</th>
       <th scope="col">From date</th>
       <th scope="col">To Date</th>
-       <th scope="col">Booked By</th>
-       <th scope="col">People &nbsp &nbsp &nbsp &nbsp Advertise</th>
+      <th scope="col">Owner</th>
+      <th scope="col">Today</th>
     </tr>
   </thead>
   <tbody>
@@ -66,16 +61,41 @@
       <td>{{$post->rpname}}</td>
       <td>From: {{$post->from_date}}</td>
       <td>Till: {{$post->to_date}}</td>
-      <td>{{$post->host_name}}</td>
-      <td>{{ Form::open(['action'=>['DashboardController@advertise',$post->rid,$post->rpname],'method' => 'POST']) }}
-      <input type="text" name="maxpeople{{$post->rid}}" id="maxpeople" value="{{$post->max_people}}" size="7">&nbsp &nbsp
-      {{Form::submit('Advertise',['class'=>'btn btn-primary'])}}{{ Form::close() }}</td>
+      <td>{{$post->user_name}}</td>
+      <td>{{$todayDate}}</td>
     </tr>
         @endforeach
 
         </tbody>
 </table>
 @endif
+
+<div class="item-wrapper">
+  <button class="btn btn-primary" onclick="openForm()">Review</button>
+      <div class="form-popup" id="myForm">
+        {{ Form::open(['action'=>['PostsController@review_room',$post->id],'method' => 'POST','class'=>'form-container']) }}
+          <div class="form-group">
+            <input type="text" class="form-control" name="headline" id="" placeholder="Headline">
+            <input type="text" class="form-control" name="description" id="" placeholder="Description">
+            <div class="rate">
+              <input type="radio" id="star5" name="rate" value="5" class="mt_star" />
+              <label for="star5" title="text">5 stars</label>
+              <input type="radio" id="star4" name="rate" value="4" class="mt_star"/>
+              <label for="star4" title="text">4 stars</label>
+              <input type="radio" id="star3" name="rate" value="3" class="mt_star"/>
+              <label for="star3" title="text">3 stars</label>
+              <input type="radio" id="star2" name="rate" value="2" class="mt_star"/>
+              <label for="star2" title="text">2 stars</label>
+              <input type="radio" id="star1" name="rate" value="1" class="mt_star"/>
+              <label for="star1" title="text">1 star</label>
+            </div>
+            {{Form::submit('Submit Review',['class'=>'btn btn-primary'])}}
+            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
     </div>
 </div>
 @endsection

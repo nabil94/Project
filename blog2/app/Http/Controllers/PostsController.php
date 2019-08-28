@@ -43,6 +43,7 @@ class PostsController extends Controller
         //return Post::where('title','second post')->get();
       //  $posts=DB::select('SELECT * FROM posts');
        $posts= Post::orderBy('title','asc')->paginate(6);
+       //$owner=
         return view('posts.index')->with('posts',$posts);
 
     }
@@ -153,6 +154,7 @@ class PostsController extends Controller
         Room_info::insert($data2);
          }
          $post->total_cost=$total_cost;
+         $post->total_rating=0;
           $post->save();
         return redirect('/posts')->with('success','Post Created');
 }
@@ -181,7 +183,7 @@ class PostsController extends Controller
     $similarityMatrix  = $productSimilarity->calculateSimilarityMatrix();
     $products = /*return*/ $productSimilarity->getProductsSortedBySimularity($id, $similarityMatrix);
   //  return view('ai_intro', compact('selectedId', 'selectedProduct', 'products'));
-$products=(object) $products;
+    $products=(object) $products;
 
         $post= Post::find($id);
         $review=DB::table('product_reviews')->where('rid','=',$id)->get();
@@ -190,12 +192,22 @@ $products=(object) $products;
     }
 
 
+    public function showHostInfo($id){
+        $user=User::find($id);
+        return view('HostProfile')->with('user',$user);
 
+    }
+
+    public function showMap(){
+        //$user=User::find($id);
+        return view('showMap');
+
+    }
 
 
      public function book_room($id,Request $request)
     {
-        $ss='dick';
+        $ss='d';
         $post= Post::find($id);
         $plame=$request->input('fname');
 
@@ -206,6 +218,10 @@ $products=(object) $products;
         DB::table('room_info')
             ->where('rpname', $plame)
             ->update(['requested_from_date' => $request->input('rfrom_date')]);
+
+            DB::table('room_info')
+                ->where('rpname', $plame)
+                ->update(['max_people' => $request->input('fpeople')]);
 
              DB::table('room_info')
             ->where('rpname', $plame)
@@ -218,10 +234,14 @@ $products=(object) $products;
              DB::table('room_info')
             ->where('rpname', $plame)
             ->update(['host_name' => auth()->user()->name]);
+
+            DB::table('room_info')
+           ->where('rpname', $plame)
+           ->update(['user_name' => auth()->user()->name]);
         //$iroom->booking="pending";
 
         $post->room_no=$post->room_no-1;
-
+        //will resolve this later
         $post->save();
         return back();
       //  return redirect('/posts');
@@ -229,19 +249,21 @@ $products=(object) $products;
 
 
 
-     public function review_room($id,Request $request)
+    public function review_room($id,Request $request)
     {
         $ss=0;
-        $post= Post::find($id);
+        $pst=Room_info::find($id)
+        $post=Post::find($pst->flat_id);
         DB::table('product_reviews')->insert(
             ['user_id' => auth()->user()->id, 'headline' => $request->input('headline'),'description' => $request->input('description'),'rating'=>$request->input('rate'),'rid'=>$post->id]);
-        $rev=DB::table('product_reviews')->where('rid', $id)->get();
+        $rev=DB::table('product_reviews')->where('rid', $post->id)->get();
          foreach($rev as $revs){
             $ss=$ss+$revs->rating;
          }
          $post->total_rating=$ss;
          $post->save();
-         return back();
+
+         return redirect('/dashboard/useroom')->with('post',$post)->with('pst',$pst);
         //return redirect('/posts');
     }
 
