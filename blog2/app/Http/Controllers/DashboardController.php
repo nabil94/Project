@@ -106,13 +106,22 @@ class DashBoardController extends Controller
 
     public function useroom(Request $request)
    {
+        $v1="booked";
+        $v2="checkout";
        $user_id=auth()->user()->id;
-       $posts = Room_info::where([['booking', '=', 'booked'],['hostid', '=', $user_id]])->get();
+       $posts = Room_info::where([['booking', '=', 'booked'],['hostid', '=', $user_id]])->orWhere([['booking', '=', 'checkout'],['hostid', '=', $user_id]])->get();
+       //$posts=DB::table('room_info')->where()
+
+       $cc=Room_info::where([['booking', '=', 'booked'],['hostid', '=', $user_id]])->count();
+       $cc1=Room_info::where([['booking', '=', 'checkout'],['hostid', '=', $user_id]])->count();
+       $cnt=$cc+$cc1;
+
+       //$hh=DB::table('checkout_history')->where([['status','=','not reviewed'],['user_id','=',$user_id]])->get();
+       //$uu=Post::find($posts->flat_id);
        $todayDate = date("Y-m-d");
 
 
-
-       return view('useroom')->with('posts',$posts)->with('todayDate',$todayDate);
+       return view('useroom')->with('posts',$posts)->with('todayDate',$todayDate)->with('cnt',$cnt);
    }
       public function cancelwantingroom($id)
     {
@@ -129,12 +138,13 @@ class DashBoardController extends Controller
     public function notify(Request $request)
     {
         $user_id=auth()->user()->id;
-        $posts=Notification::where([['guest_id','=',$user_id]])->get();
+        $posts=DB::table('notifications')->where([['guest_id','=',$user_id]])->get();
+        //$posts= Post::orderBy('title','asc')->paginate(6);
         return view('notification')->with('posts',$posts);
     }
     public function get_customer_data()
     {
-         $user_id=auth()->user()->id;
+        $user_id=auth()->user()->id;
         $posts = Room_info::where([['booking', '=', 'booked'],['user_id', '=', $user_id]])->get();
         return $posts;
     }

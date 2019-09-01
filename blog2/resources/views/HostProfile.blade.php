@@ -8,9 +8,28 @@
     <p class="card-text">Email:{{$user->email}}</p>
     <p class="card-text">no   :{{$user->phone_number}}</p>
     <p class="card-text">age  :{{$user->age}}</p>
-    <p class="card-text">nid  :{{$user->nid}}</p> 
+    <p class="card-text">nid  :{{$user->nid}}</p>
+		<p class="card-text">Rating as owner  :{{$user->owner_avg_rate}}</p>
 
 
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>Headline</th>
+					<th>Review as Oewner</th>
+					<th>Rating</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach($review as $reviews)
+				<tr>
+					<td>{{$reviews->headline}}</td>
+					<td>{{$reviews->owner_review}}</td>
+					<td>{{$reviews->owner_rating}}</td>
+				</tr>
+				@endforeach
+			</tbody>
+		</table>
 
 
 			<div class="col-md-4">

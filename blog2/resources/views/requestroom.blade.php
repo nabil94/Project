@@ -33,9 +33,9 @@
           <span>Rooms I am Using</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="rating">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Ratings and review</span></a>
+        <a class="nav-link" href="own">
+          <i class="fas fa-fw fa-table"></i>
+          <span>Owner_rating</span></a>
       </li>
     </ul>
 
@@ -57,6 +57,7 @@
        <th scope="col">Requested By</th>
       <th scope="col">Confirm</th>
       <th scope="col">Cancel</th>
+      <th scope="col">User Profile</th>
     </tr>
   </thead>
           @foreach($posts as $post)
@@ -73,6 +74,11 @@
                 {{ Form::open(['action'=>['DashboardController@cancelroom',$post->id],'method' => 'POST']) }}
                 {{Form::submit('Cancel',['class'=>'btn btn-primary'])}}
                 {{ Form::close() }}</td>
+                <td>
+                   <a href="/blog2/dashboard/want/{{$post->user_id}}" class="btn btn-info">Show Profile</a>
+                </td>
+
+
     </tr>
         @endforeach
         </tbody>

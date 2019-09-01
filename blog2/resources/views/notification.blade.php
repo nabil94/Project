@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         @if(count($posts)<1)
            <h1>No Notifications</h1>
-        @else  
+        @else
         <div class row>
           <h1>Notifications</h1>
         </div>
@@ -29,6 +29,11 @@
       <td><div class="alert alert-info">{{$post->user_name}} has denied your {{$post->room_name}} request</div></td>
     </tr>
     @endif
+    @if($post->status=='checkout')
+   <tr>
+     <td><div class="alert alert-info">{{$post->user_name}} has checked out from your {{$post->room_name}} room.The room is free now</div></td>
+   </tr>
+   @endif
         @endforeach
         </tbody>
 </table>

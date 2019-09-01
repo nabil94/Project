@@ -25,6 +25,8 @@
             <th>Location</th>
             <th>Contact Number</th>
             <th>Action</th>
+            <th>Action</th>
+            <th>Action</th>
    		</tr>
    	</thead>
    	<tbody>

@@ -16,15 +16,17 @@
    			<th>Cost</th>
    			<th>Avilable From</th>
    			<th>Available till</th>
+				<th>Rating</th>
    		</tr>
    		@foreach($indi_rooms as $room)
-          @if($room->booking!="pending" && $room->booking!="booked")
+          @if(($room->booking!="pending" && $room->booking!="booked") || $room->booking=="checkout")
    		<tr onclick="myFunction(this)">
    			<td>{{$room->rpname}}</td>
    			<td>{{$room->max_people}}</td>
    			<td>{{$room->cost}}</td>
    			<td>{{$room->from_date}}</td>
    			<td>{{$room->to_date}}</td>
+				<td>{{$room->room_avg_rate}}</td>
 
    		</tr>
        @endif
@@ -74,10 +76,10 @@
 				<a href="{{action('PostsController@index')}}" class="btn btn-primary">Back</a>
 			</div>
 		</div></br>
-		<!-- <table class="table table-bordered">
+		<table class="table table-bordered">
 			<thead>
 				<tr>
-					<th>Headline</th>
+					<th>Room</th>
 					<th>Description</th>
 					<th>Rating</th>
 				</tr>
@@ -85,13 +87,13 @@
 			<tbody>
 				@foreach($reviews as $review)
 				<tr>
-					<td>{{$review->headline}}</td>
-					<td>{{$review->description}}</td>
-					<td>{{$review->rating}}</td>
+					<td>{{$review->room_name}}</td>
+					<td>{{$review->room_review}}</td>
+					<td>{{$review->room_rating}}</td>
 				</tr>
 				@endforeach
 			</tbody>
-		</table> -->
+		</table>
 
 </div>
 </div>

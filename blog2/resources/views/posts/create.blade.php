@@ -10,7 +10,7 @@
     {{ Form::open(['action'=>'PostsController@store','method' => 'POST','enctype'=>'multipart/form-data']) }}
     <div class="form-group row">
         <div class="col-md-4">
-    	{{Form::text('title','',['class'=>'form-control','placeholder'=>'Room Name'])}}
+    	{{Form::text('title','',['class'=>'form-control','placeholder'=>'Flat name'])}}
         </div>
     </div>
     <div class="form-group row">
@@ -98,7 +98,7 @@
    </div>
     </div>
 	{{Form::submit('Submit',['class'=>'btn btn-primary'])}}
-{{ Form::close() }} 
+{{ Form::close() }}
 </div>
 </div>
 </div>

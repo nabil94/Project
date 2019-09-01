@@ -6,14 +6,14 @@
       <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
            <div class="carousel-item">
-            <img class="d-block w-100" src="http://localhost/laravelapps/blog/public/storage/cover_images/image3_1559414667.jpg" alt="Third slide" height="300" width="200">
+            <img class="d-block w-100" src="http://localhost/laravelapps/blog2/public/storage/cover_images/image3_1559414667.jpg" alt="Third slide" height="300" width="200">
           </div>
 
           <div class="carousel-item active">
-            <img class="d-block w-100" src="http://localhost/laravelapps/blog/public/storage/cover_images/image3_1559310324.jpg" alt="First slide" height="300" width="200">
+            <img class="d-block w-100" src="http://localhost/laravelapps/blog2/public/storage/cover_images/image3_1559310324.jpg" alt="First slide" height="300" width="200">
           </div>
           <div class="carousel-item">
-            <img class="d-block w-100" src="http://localhost/laravelapps/blog/public/storage/cover_images/oakImage-1536872349845-articleLarge_1561361021.jpg" alt="Second slide" height="300" width="200">
+            <img class="d-block w-100" src="http://localhost/laravelapps/blog2/public/storage/cover_images/oakImage-1536872349845-articleLarge_1561361021.jpg" alt="Second slide" height="300" width="200">
           </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">

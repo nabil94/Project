@@ -10,6 +10,7 @@ use App\Room_info;
 use DB;
 use App\User;
 use App\Notifications\User_Added;
+use App\Notification;
 use App\ProductSimilarity;
 use PDF;
 
@@ -150,12 +151,15 @@ class PostsController extends Controller
                 'to_date'=>$request->to_date[$item],
                 'flat_name'=>$request->input('title'),
                 'user_id'=>auth()->user()->id,
+                'user_name'=>auth()->user()->name,
+
             );
         Room_info::insert($data2);
          }
          $post->total_cost=$total_cost;
          $post->total_rating=0;
           $post->save();
+          DB::table('room_info')->where('flat_name',$post->title)->update(['flat_id' => $post->id]);
         return redirect('/posts')->with('success','Post Created');
 }
 
@@ -186,7 +190,7 @@ class PostsController extends Controller
     $products=(object) $products;
 
         $post= Post::find($id);
-        $review=DB::table('product_reviews')->where('rid','=',$id)->get();
+        $review=DB::table('product_reviews')->where('flat_id','=',$id)->get();
         $rooms=DB::table('room_info')->where('flat_name','=',$post->title)->get();
         return view('posts.show',compact('id', 'selectedProduct', 'products'))->with('post',$post)->with('reviews',$review)->with('indi_rooms',$rooms);
     }
@@ -194,7 +198,9 @@ class PostsController extends Controller
 
     public function showHostInfo($id){
         $user=User::find($id);
-        return view('HostProfile')->with('user',$user);
+        $review=DB::table('product_reviews')->where('owner_id','=',$user->id)->get();
+
+        return view('HostProfile')->with('user',$user)->with('review',$review);
 
     }
 
@@ -235,12 +241,12 @@ class PostsController extends Controller
             ->where('rpname', $plame)
             ->update(['host_name' => auth()->user()->name]);
 
-            DB::table('room_info')
+          /*  DB::table('room_info')
            ->where('rpname', $plame)
-           ->update(['user_name' => auth()->user()->name]);
+           ->update(['user_name' => ->name]);*/
         //$iroom->booking="pending";
 
-        $post->room_no=$post->room_no-1;
+        //$post->room_no=$post->room_no-1;
         //will resolve this later
         $post->save();
         return back();
@@ -251,9 +257,73 @@ class PostsController extends Controller
 
     public function review_room($id,Request $request)
     {
-        $ss=0;
-        $pst=Room_info::find($id)
-        $post=Post::find($pst->flat_id);
+         $ss=0;
+         $ss1=0;
+         $ss2=0;
+         $post=Room_info::find($id);
+
+         DB::table('product_reviews')->insert(
+           ['user_id' => auth()->user()->id, 'headline' => $request->input('headline'), 'rid' => $post->id, 'Given_by' => auth()->user()->name, 'owner_rating' => $request->input('rate1'),'owner_review' => $request->input('owner_review'),
+           'room_rating' => $request->input('rate'), 'room_review' => $request->input('description'), 'room_name' => $post->rpname, 'flat_id' => $post->flat_id, 'owner_id' => $post->user_id]
+         );
+         $rev=DB::table('product_reviews')->where('flat_id', $post->flat_id)->get();
+
+         foreach($rev as $revs){
+            $ss=$ss+$revs->room_rating;
+         }
+         DB::table('posts')
+             ->where('id', $post->flat_id)
+             ->update(['total_rating' => $ss]);
+
+         $owner_rev=DB::table('product_reviews')->where('owner_id', $post->user_id)->get();
+         foreach($owner_rev as $owner_revs){
+            $ss1=$ss1+$owner_revs->owner_rating;
+         }
+
+         DB::table('users')
+             ->where('id', $post->user_id)
+             ->update(['owner_rate' => $ss1]);
+
+        $tot=DB::table('product_reviews')->where('owner_id',$post->user_id)->count();
+        $avg=$ss1/$tot;
+        DB::table('users')
+            ->where('id', $post->user_id)
+            ->update(['owner_avg_rate' => $avg]);
+
+        $room_rev=DB::table('product_reviews')->where('rid', $post->id)->get();
+        foreach($room_rev as $room_revs){
+          $ss2=$ss2+$room_revs->room_rating;
+        }
+
+        DB::table('room_info')
+            ->where('id', $post->id)
+            ->update(['room_rate' => $ss2]);
+
+        $tot1=DB::table('product_reviews')->where('rid',$post->id)->count();
+        $avg1=$ss2/$tot1;
+
+        DB::table('room_info')
+            ->where('id', $post->id)
+            ->update(['room_avg_rate' => $avg1]);
+
+            DB::table('checkout_history')
+                ->where('user_id', auth()->user()->id)
+                ->update(['status' => "reviewed"]);
+
+         if($post->booking == "checkout"){
+           $post->booking="";
+         }
+         $post->save();
+         return redirect('/dashboard/useroom');
+        //return redirect('/posts');
+    }
+
+    public function review_user($id,Request $request)
+    {
+        /*$ss=0;
+        $pst=Room_info::find($id);
+        $id1=$pst->flat_id;
+        $post=Post::find($id1);
         DB::table('product_reviews')->insert(
             ['user_id' => auth()->user()->id, 'headline' => $request->input('headline'),'description' => $request->input('description'),'rating'=>$request->input('rate'),'rid'=>$post->id]);
         $rev=DB::table('product_reviews')->where('rid', $post->id)->get();
@@ -263,8 +333,32 @@ class PostsController extends Controller
          $post->total_rating=$ss;
          $post->save();
 
-         return redirect('/dashboard/useroom')->with('post',$post)->with('pst',$pst);
+         return redirect('/dashboard')->with('post',$post)->with('pst',$pst);*/
+         $post=Room_info::find($id);
+         $post= Post::find($id);
+         $plame=$request->input('fname');
+
+         DB::table('room_info')
+             ->where('rpname', $plame)
+             ->update(['booking' => "pending"]);
+
+         return redirect('/dashboard/useroom');
         //return redirect('/posts');
+    }
+
+    public function checkout($id,Request $request)
+    {
+      $room=Room_info::find($id);
+      //Room_info::where([['booking', '=', 'pending'],['user_id', '=', $user_id]])->get();
+      DB::table('room_info')->where('id',$room->id)->update(['booking' => "checkout"]);
+      //$cc=Room_info::where([[]])
+      DB::table('notifications')->insert(['user_id'=>auth()->user()->id,'user_name'=>auth()->user()->name,'guest_id'=>$room->user_id,
+      'guest_name'=>$room->user_name,'room_id'=>$room->id,'room_name'=>$room->rpname,'status'=>'checkout']);
+      DB::table('checkout_history')->insert(['room_id'=>$room->id,'room_name'=>$room->rpname,'flat_id'=>$room->flat_id,'flat_name'=>$room->flat_name,
+      'Entry_date'=>$room->requested_from_date,'checkout_date'=>$room->requested_to_date,'user_id'=>$room->hostid,'user_name'=>$room->host_name,'status'=>"not reviewed"]);
+
+
+      return redirect('/dashboard/useroom');
     }
 
     /**
@@ -326,6 +420,7 @@ class PostsController extends Controller
                 'to_date'=>$request->to_date[$item],
                 'flat_name'=>$request->input('title'),
                 'user_id'=>auth()->user()->id,
+                'flat_id'=>$post->id,
             );
         Room_info::insert($data2);
          }
