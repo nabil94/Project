@@ -8,6 +8,7 @@ use App\User;
 use App\Post;
 use App\Room_info;
 use App\Notification;
+use App\Checkout_history;
 use App\room_book;
 use DB;
 use PDF;
@@ -104,6 +105,35 @@ class DashBoardController extends Controller
         return view('wantingroom')->with('posts',$posts);
     }
 
+    public function owner_rating_page(Request $request){
+        $user_id=auth()->user()->id;
+        $posts=DB::table('checkout_history')->where([['status','=','checkout'],['owner_id','=',$user_id]])->get();
+        $cnt=DB::table('checkout_history')->where([['status','=','checkout'],['owner_id','=',$user_id]])->count();
+        return view('owner_review')->with('posts',$posts)->with('cnt',$cnt);
+    }
+
+    public function nabil(Request $request){
+       $posts=DB::table('room_info')->get();
+       return view('nabil')->with('posts',$posts);
+    }
+
+    public function editBook($id){
+      //DB::table('room_info')->
+      $posts=Room_info::find($id);
+      if(auth()->user()->id==1){
+        DB::table('room_info')
+            ->where('id', $posts->id)
+            ->update(['host_name' => auth()->user()->name]);
+
+        DB::table('room_info')
+                ->where('id', $posts->id)
+                ->update(['hostid' => auth()->user()->id]);
+      }
+      
+        return redirect('/nabil');
+
+    }
+
     public function useroom(Request $request)
    {
         $v1="booked";
@@ -123,6 +153,7 @@ class DashBoardController extends Controller
 
        return view('useroom')->with('posts',$posts)->with('todayDate',$todayDate)->with('cnt',$cnt);
    }
+
       public function cancelwantingroom($id)
     {
         $post= Room_info::find($id);
@@ -155,6 +186,8 @@ class DashBoardController extends Controller
         $pdf->loadHTML($this->convert_customer_data_to_html());
          return $pdf->stream();
     }
+
+
     public function convert_customer_data_to_html()
     {
         $customer_data=$this->get_customer_data();

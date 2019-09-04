@@ -31,6 +31,9 @@
       <li>
         <a class="nav-link" href="/blog2/public/profile">Profile</a>
       </li>
+      <li>
+        <a class="nav-link" href="/blog2/public/nabil">Nabil</a>
+      </li>
     </ul>
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">

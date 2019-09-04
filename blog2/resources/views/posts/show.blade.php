@@ -36,9 +36,10 @@
 <div class="row">
 
 	</div>
-		{{ Form::open(['action'=>['PostsController@book_room',$post->id],'method' => 'POST']) }}
 
-		 @if(Auth::check())
+
+		 @if(Auth::check() && auth()->user()->id != $post->user_id)
+		 {{ Form::open(['action'=>['PostsController@book_room',$post->id],'method' => 'POST']) }}
 		<div class="row">
 			<div class="col-md-7 text-left">
 				<label for="name">Name :

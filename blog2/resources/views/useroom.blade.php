@@ -30,6 +30,11 @@
           <i class="fas fa-fw fa-table"></i>
           <span>Rooms I am Using</span></a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="own">
+          <i class="fas fa-fw fa-table"></i>
+          <span>Owner_rating</span></a>
+      </li>
     </ul>
 
 

@@ -33,9 +33,9 @@
           <span>Rooms I am Using</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="dashboard/rating">
+        <a class="nav-link" href="dashboard/own">
           <i class="fas fa-fw fa-chart-area"></i>
-          <span>Ratings and review</span></a>
+          <span>Owner_rating</span></a>
       </li>
     </ul>
 
@@ -75,7 +75,7 @@
                         </tr>
                          <tr class="collapse row{{$post->id}}">
                               <th>Flat Name</th><th>People</th><th>Cost</th><th>From</th><th>To</th>
-                              <th>Status</th>
+                              <th>Status</th><th>Delete Rooms</th>
                              </tr>
                             @foreach($indiroom as $room)
                              @if($room->flat_name==$post->title)
@@ -86,6 +86,11 @@
                             <td>{{$room->from_date}}</td>
                             <td>{{$room->to_date}}</td>
                             <td>{{$room->booking}}</td>
+                            <td>
+                                {{ Form::open(['action'=>['PostsController@destroyRoom',$room->id],'method' => 'POST']) }}
+                                {{Form::submit('Delete',['class'=>'btn btn-danger'])}}
+                                {{ Form::close() }}
+                            </td>
                         </tr>
                             @endif
                             @endforeach

@@ -11,6 +11,7 @@ use DB;
 use App\User;
 use App\Notifications\User_Added;
 use App\Notification;
+use App\Checkout_history;
 use App\ProductSimilarity;
 use PDF;
 
@@ -204,6 +205,13 @@ class PostsController extends Controller
 
     }
 
+    public function showUserInfo($id)
+    {
+        $user=User::find($id);
+        $review=DB::table('checkout_history')->where('user_id','=',$user->id)->get();
+        return view('userprofile')->with('user',$user)->with('review',$review);
+    }
+
     public function showMap(){
         //$user=User::find($id);
         return view('showMap');
@@ -241,7 +249,7 @@ class PostsController extends Controller
             ->where('rpname', $plame)
             ->update(['host_name' => auth()->user()->name]);
 
-          /*  DB::table('room_info')
+            /*DB::table('room_info')
            ->where('rpname', $plame)
            ->update(['user_name' => ->name]);*/
         //$iroom->booking="pending";
@@ -261,6 +269,8 @@ class PostsController extends Controller
          $ss1=0;
          $ss2=0;
          $post=Room_info::find($id);
+
+         //$cid=
 
          DB::table('product_reviews')->insert(
            ['user_id' => auth()->user()->id, 'headline' => $request->input('headline'), 'rid' => $post->id, 'Given_by' => auth()->user()->name, 'owner_rating' => $request->input('rate1'),'owner_review' => $request->input('owner_review'),
@@ -306,9 +316,9 @@ class PostsController extends Controller
             ->where('id', $post->id)
             ->update(['room_avg_rate' => $avg1]);
 
-            DB::table('checkout_history')
+          /*  DB::table('checkout_history')
                 ->where('user_id', auth()->user()->id)
-                ->update(['status' => "reviewed"]);
+                ->update(['status' => "reviewed"]);*/
 
          if($post->booking == "checkout"){
            $post->booking="";
@@ -334,28 +344,54 @@ class PostsController extends Controller
          $post->save();
 
          return redirect('/dashboard')->with('post',$post)->with('pst',$pst);*/
-         $post=Room_info::find($id);
-         $post= Post::find($id);
-         $plame=$request->input('fname');
+         //$post=
+         $tot=0 ;
+         $post=Checkout_history::find($id);
 
-         DB::table('room_info')
-             ->where('rpname', $plame)
-             ->update(['booking' => "pending"]);
+         $post->user_rating=$request->input('Urate');
+         $post->user_review=$request->input('Udescription');
+         $post->status='reviewed';
+         $post->save();
 
-         return redirect('/dashboard/useroom');
+         $user_rev=DB::table('checkout_history')->where('user_id',$post->user_id)->get();
+         $user_rev_cnt=DB::table('checkout_history')->where('user_id',$post->user_id)->count();
+         foreach($user_rev as $user_revs){
+           $tot=$tot+$user_revs->user_rating;
+         }
+         $avg=$tot/$user_rev_cnt;
+
+         DB::table('users')
+             ->where('id', $post->user_id)
+             ->update(['user_rate' => $tot]);
+
+             DB::table('users')
+                 ->where('id', $post->user_id)
+                 ->update(['user_avg_rate' => $avg]);
+
+
+
+
+
+
+
+         return redirect('/dashboard/own');
         //return redirect('/posts');
     }
 
     public function checkout($id,Request $request)
     {
       $room=Room_info::find($id);
+      $today=date("Y-m-d");
       //Room_info::where([['booking', '=', 'pending'],['user_id', '=', $user_id]])->get();
       DB::table('room_info')->where('id',$room->id)->update(['booking' => "checkout"]);
+    //  DB::table('room_book')->where([['rid','=',$room->id],['hostid','=',auth()->user()->id],['status','=','booked'],['to_date','=',$today]])->update(['status' => "checkout"]);
       //$cc=Room_info::where([[]])
       DB::table('notifications')->insert(['user_id'=>auth()->user()->id,'user_name'=>auth()->user()->name,'guest_id'=>$room->user_id,
       'guest_name'=>$room->user_name,'room_id'=>$room->id,'room_name'=>$room->rpname,'status'=>'checkout']);
+
       DB::table('checkout_history')->insert(['room_id'=>$room->id,'room_name'=>$room->rpname,'flat_id'=>$room->flat_id,'flat_name'=>$room->flat_name,
-      'Entry_date'=>$room->requested_from_date,'checkout_date'=>$room->requested_to_date,'user_id'=>$room->hostid,'user_name'=>$room->host_name,'status'=>"not reviewed"]);
+      'Entry_date'=>$room->requested_from_date,'checkout_date'=>$room->requested_to_date,'user_id'=>$room->hostid,'user_name'=>$room->host_name,'status'=>'checkout',
+      'owner_id'=>$room->user_id,'owner_name'=>$room->user_name]);
 
 
       return redirect('/dashboard/useroom');
@@ -420,6 +456,7 @@ class PostsController extends Controller
                 'to_date'=>$request->to_date[$item],
                 'flat_name'=>$request->input('title'),
                 'user_id'=>auth()->user()->id,
+                'user_name'=>auth()->user()->name,
                 'flat_id'=>$post->id,
             );
         Room_info::insert($data2);
@@ -447,6 +484,21 @@ class PostsController extends Controller
             Storage::delete('public/cover_images/'.$post->cover_image);
         }
         $post->delete();
-        return redirect('/dashboard')->with('success','Room Deleted');
+        return redirect('/dashboard')->with('success','Flat Deleted');
+    }
+
+    public function destroyRoom($id)
+    {
+      $post=Post::find($id);
+      if(auth()->user()->id !== $post->user_id){
+          return redirect('posts')->with('error','Unauthorized page');
+      }
+      if($post->cover_image!='noimage.jpg')
+      {
+          Storage::delete('public/cover_images/'.$post->cover_image);
+      }
+      $post->delete();
+      return redirect('/dashboard')->with('success','Flat Deleted');
+
     }
 }
