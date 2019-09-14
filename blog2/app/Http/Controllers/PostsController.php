@@ -11,6 +11,7 @@ use DB;
 use App\User;
 use App\Notifications\User_Added;
 use App\Notification;
+use App\Pending_request;
 use App\Checkout_history;
 use App\ProductSimilarity;
 use PDF;
@@ -184,16 +185,17 @@ class PostsController extends Controller
       //  $selectedProduct = $selectedProducts[array_keys($selectedProducts)[0]];
     //}
     $selectedProduct=DB::table('posts')->where('id','=',$id)->get();
+    $showav=DB::table('pending_request')->where('status',"CONFIRM")->get();
     $productSimilarity = new ProductSimilarity($products->toArray());
     $similarityMatrix  = $productSimilarity->calculateSimilarityMatrix();
-    $products = /*return*/ $productSimilarity->getProductsSortedBySimularity($id, $similarityMatrix);
+    $products = $productSimilarity->getProductsSortedBySimularity($id, $similarityMatrix);
   //  return view('ai_intro', compact('selectedId', 'selectedProduct', 'products'));
     $products=(object) $products;
 
         $post= Post::find($id);
         $review=DB::table('product_reviews')->where('flat_id','=',$id)->get();
         $rooms=DB::table('room_info')->where('flat_name','=',$post->title)->get();
-        return view('posts.show',compact('id', 'selectedProduct', 'products'))->with('post',$post)->with('reviews',$review)->with('indi_rooms',$rooms);
+        return view('posts.show',compact('id', 'selectedProduct', 'products'))->with('post',$post)->with('reviews',$review)->with('indi_rooms',$rooms)->with('avilable',$showav);
     }
 
 
@@ -256,6 +258,14 @@ class PostsController extends Controller
 
         //$post->room_no=$post->room_no-1;
         //will resolve this later
+        $room= DB::table('room_info')->where('rpname',$plame)->get();
+        foreach($room as $rooms){
+            $rrid=$rooms->id;
+            $hhid=$rooms->user_id;
+        }
+        DB::table('pending_request')->insert(
+            ['requested_by_id' => auth()->user()->id, 'requested_from_date' => $request->input('rfrom_date'),'requested_to_date' =>  $request->input('rto_date'),'requested_by'=>auth()->user()->name,'room_name'=>$request->input('fname'),'flat_name'=>$post->title,'flat_id'=>$post->id,'room_id'=>$rrid,
+            'host_id'=>$hhid]);
         $post->save();
         return back();
       //  return redirect('/posts');
@@ -263,14 +273,19 @@ class PostsController extends Controller
 
 
 
-    public function review_room($id,Request $request)
+    public function review_room($id,$id1,Request $request)
     {
          $ss=0;
          $ss1=0;
          $ss2=0;
          $post=Room_info::find($id);
+         $pr=Pending_request::find($id1);
+
 
          //$cid=
+         DB::table('pending_request')
+             ->where('id', $pr->id)
+             ->update(['status' => "REVIEWED"]);
 
          DB::table('product_reviews')->insert(
            ['user_id' => auth()->user()->id, 'headline' => $request->input('headline'), 'rid' => $post->id, 'Given_by' => auth()->user()->name, 'owner_rating' => $request->input('rate1'),'owner_review' => $request->input('owner_review'),
@@ -352,7 +367,7 @@ class PostsController extends Controller
          $post->user_review=$request->input('Udescription');
          $post->status='reviewed';
          $post->save();
-
+         //DB::table('pending_request')->where('id',$post->request_id)->update()
          $user_rev=DB::table('checkout_history')->where('user_id',$post->user_id)->get();
          $user_rev_cnt=DB::table('checkout_history')->where('user_id',$post->user_id)->count();
          foreach($user_rev as $user_revs){
@@ -369,21 +384,18 @@ class PostsController extends Controller
                  ->update(['user_avg_rate' => $avg]);
 
 
-
-
-
-
-
          return redirect('/dashboard/own');
         //return redirect('/posts');
     }
 
-    public function checkout($id,Request $request)
+    public function checkout($id,$id1,Request $request)
     {
       $room=Room_info::find($id);
+      $pr=Pending_request::find($id1);
       $today=date("Y-m-d");
       //Room_info::where([['booking', '=', 'pending'],['user_id', '=', $user_id]])->get();
       DB::table('room_info')->where('id',$room->id)->update(['booking' => "checkout"]);
+      DB::table('pending_request')->where('id',$pr->id)->update(['status' => "CHECKOUT"]);
     //  DB::table('room_book')->where([['rid','=',$room->id],['hostid','=',auth()->user()->id],['status','=','booked'],['to_date','=',$today]])->update(['status' => "checkout"]);
       //$cc=Room_info::where([[]])
       DB::table('notifications')->insert(['user_id'=>auth()->user()->id,'user_name'=>auth()->user()->name,'guest_id'=>$room->user_id,
@@ -391,7 +403,7 @@ class PostsController extends Controller
 
       DB::table('checkout_history')->insert(['room_id'=>$room->id,'room_name'=>$room->rpname,'flat_id'=>$room->flat_id,'flat_name'=>$room->flat_name,
       'Entry_date'=>$room->requested_from_date,'checkout_date'=>$room->requested_to_date,'user_id'=>$room->hostid,'user_name'=>$room->host_name,'status'=>'checkout',
-      'owner_id'=>$room->user_id,'owner_name'=>$room->user_name]);
+      'owner_id'=>$room->user_id,'owner_name'=>$room->user_name,'request_id'=>$pr->id]);
 
 
       return redirect('/dashboard/useroom');
@@ -484,21 +496,27 @@ class PostsController extends Controller
             Storage::delete('public/cover_images/'.$post->cover_image);
         }
         $post->delete();
+        DB::table('room_info')->where('flat_id',$post->id)->delete();
         return redirect('/dashboard')->with('success','Flat Deleted');
     }
 
     public function destroyRoom($id)
     {
-      $post=Post::find($id);
-      if(auth()->user()->id !== $post->user_id){
-          return redirect('posts')->with('error','Unauthorized page');
+      $post=Room_info::find($id);
+      $pp=DB::table('posts')->where('id',$post->flat_id)->get();
+      /*DB::table('posts')
+          ->where('id', $post->flat_id)
+          ->update(['room_no' => $avg1]);*/
+
+      foreach($pp as $pps){
+         $pps->room_no=$pps->room_no-1;
+         $pps->total_cost=$pps->total_cost-$post->cost;
+         //$pps->total_rating=$pps->total_rating-$post->room_rate;
+         $pps->save();
       }
-      if($post->cover_image!='noimage.jpg')
-      {
-          Storage::delete('public/cover_images/'.$post->cover_image);
-      }
+
       $post->delete();
-      return redirect('/dashboard')->with('success','Flat Deleted');
+      return redirect('/dashboard')->with('success','Room Deleted');
 
     }
 }

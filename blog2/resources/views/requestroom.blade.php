@@ -55,7 +55,7 @@
       <th scope="col">flat Name</th>
       <th scope="col">From date</th>
       <th scope="col">To Date</th>
-       <th scope="col">Requested By</th>
+       <!-- <th scope="col">Requested By</th> -->
       <th scope="col">Confirm</th>
       <th scope="col">Cancel</th>
       <th scope="col">User Profile</th>
@@ -63,25 +63,27 @@
   </thead>
           @foreach($posts as $post)
   <tbody>
+    @if($post->status==NULL)
     <tr>
-      <td>{{$post->rpname}}</td>
+      <td>{{$post->room_name}}</td>
       <td>{{$post->flat_name}}</td>
       <td>{{$post->requested_from_date}}</td>
       <td>{{$post->requested_to_date}}</td>
-      <td>{{$post->host_name}}</td>
-      <td>{{ Form::open(['action'=>['DashboardController@confirmroom',$post->id],'method' => 'POST']) }}
+
+      <td>{{ Form::open(['action'=>['DashboardController@confirmroom',$post->room_id,$post->id],'method' => 'POST']) }}
                 {{Form::submit('Confirm',['class'=>'btn btn-primary'])}}
                 {{ Form::close() }}</td>
                 <td>
-                {{ Form::open(['action'=>['DashboardController@cancelroom',$post->id],'method' => 'POST']) }}
+                {{ Form::open(['action'=>['DashboardController@cancelroom',$post->room_id,$post->id],'method' => 'POST']) }}
                 {{Form::submit('Cancel',['class'=>'btn btn-primary'])}}
                 {{ Form::close() }}</td>
                 <td>
-                   <a href="/blog2/public/dashboard/want/{{$post->hostid}}" class="btn btn-info">Show Profile</a>
+                   <a href="/blog2/public/dashboard/want/{{$post->requested_by_id}}" class="btn btn-info">Show Profile</a>
                 </td>
 
 
     </tr>
+    @endif
         @endforeach
         </tbody>
 </table>

@@ -26,7 +26,7 @@
             <th>Contact Number</th>
             <th>Action</th>
             <th>Action</th>
-            <th>Action</th>
+            <!-- <th>Action</th> -->
    		</tr>
    	</thead>
    	<tbody>
@@ -42,9 +42,9 @@
             <td>
                <a href="/blog2/public/pos/{{$post->user_id}}" class="btn btn-info">Show Profile</a>
             </td>
-            <td>
+            <!-- <td>
                <a href="/blog2/public/map" class="btn btn-info">Show Map</a>
-            </td>
+            </td> -->
    		</tr>
    		@endforeach
 

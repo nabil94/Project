@@ -9,6 +9,9 @@
     <p class="card-text">no   :{{auth()->user()->phone_number}}</p>
     <p class="card-text">age  :{{auth()->user()->age}}</p>
     <p class="card-text">nid  :{{auth()->user()->nid}}</p>
+		<p class="card-text">nid  :{{auth()->user()->nid}}</p>
+		<p class="card-text">Owner_rating  :{{auth()->user()->owner_avg_rate}}</p>
+		<p class="card-text">user_rating  :{{auth()->user()->user_avg_rate}}</p>
 
 
 
@@ -16,9 +19,9 @@
 			<div class="col-md-4">
 				<a href="{{action('PostsController@index')}}" class="btn btn-primary">Back</a>
 			</div>
-      <div class="col-md-12">
+      <!-- <div class="col-md-12">
 				<a href="profile/{{auth()->user()->id}}/edit" class="btn btn-primary">Edit</a>
-			</div>
+			</div> -->
 
 		</div>
 </div>

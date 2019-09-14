@@ -2,7 +2,7 @@
 @section('content')
 <div class="row justify-content-center">
 	<div class="col-md-6">
-<div class="card" style="width:420px">
+<div class="card" style="width:650px">
 	<img style="width:100%" src="http://localhost/laravelapps/blog/public/storage/cover_images/{{$post->cover_image}}">
 	<div class="card-body">
 		<div class="card-title">{{$post->title}}</div>
@@ -17,9 +17,10 @@
    			<th>Avilable From</th>
    			<th>Available till</th>
 				<th>Rating</th>
+				<th>Show rooms</th>
    		</tr>
    		@foreach($indi_rooms as $room)
-          @if(($room->booking!="pending" && $room->booking!="booked") || $room->booking=="checkout")
+
    		<tr onclick="myFunction(this)">
    			<td>{{$room->rpname}}</td>
    			<td>{{$room->max_people}}</td>
@@ -27,9 +28,22 @@
    			<td>{{$room->from_date}}</td>
    			<td>{{$room->to_date}}</td>
 				<td>{{$room->room_avg_rate}}</td>
+				<td><i class="glyphicon glyphicon-plus"><button class="btn btn-primary">Show AVL</button></i></td>
 
    		</tr>
-       @endif
+			<tr class="collapse row{{$room->id}}">
+              <th>FROM</th><th>TO</th>
+
+              </tr>
+                @foreach($avilable as $shows)
+                 @if($room->id==$shows->room_id)
+                     <tr class="collapse row{{$room->id}}">
+                      <td>{{$shows->requested_from_date}}</td>
+                      <td>{{$shows->requested_to_date}}</td>
+                    </tr>
+        				@endif
+              @endforeach
+       
    		@endforeach
    </table>
 </div>

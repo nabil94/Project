@@ -54,23 +54,23 @@
         <div class="col-md-6">
            <div class="card" style="width:350px">
     <div class="card-body">
-        <div class="card-title">{{$post->rpname}}</div>
+        <div class="card-title">{{$post->room_name}}</div>
         <p class="card-text">{{$post->flat_name}}</p>
         <p class="card-text">{{$post->requested_from_date}}</p>
         <p class="card-text">{{$post->requested_to_date}}</p>
-        @if($todayDate==$post->requested_to_date && $post->booking == "booked")
-        {{ Form::open(['action'=>['PostsController@checkout',$post->id],'method' => 'POST']) }}
+        @if($todayDate==$post->requested_to_date && $post->status == "CONFIRM")
+        {{ Form::open(['action'=>['PostsController@checkout',$post->room_id,$post->id],'method' => 'POST']) }}
     			<div class="col-md-4 text-left">
 
     				{{Form::submit('Checkout',['class'=>'btn btn-primary'])}}
     				{{ Form::close() }}
     			</div>
         @endif
-        @if($post->booking == "checkout")
+        @if($post->status == "CHECKOUT")
         <div class="item-wrapper">
           <button class="btn btn-primary" onclick="openForm()">Review</button>
               <div class="form-popup" id="myForm">
-                {{ Form::open(['action'=>['PostsController@review_room',$post->id],'method' => 'POST','class'=>'form-container']) }}
+                {{ Form::open(['action'=>['PostsController@review_room',$post->room_id,$post->id],'method' => 'POST','class'=>'form-container']) }}
                   <div class="form-group">
                     <input type="text" class="form-control" name="headline" id="" placeholder="Headline">
                     <input type="text" class="form-control" name="description" id="" placeholder="Description">
